@@ -21,7 +21,6 @@ public class Decoder extends Wrapper {
         Not not2 = new Not("N2", getInput(2));
         Not not3 = new Not("N3", getInput(3));
         Not not4 = new Not("N4", getInput(4));
-        addOutput(not0.getOutput(0));
         And[] ands = new And[32];
         ands[0]= new And("D0",not0.getOutput(0),not1.getOutput(0),not2.getOutput(0),not3.getOutput(0),not4.getOutput(0));
         ands[1]= new And("D1",getInput(0),not1.getOutput(0),not2.getOutput(0),not3.getOutput(0),not4.getOutput(0));
@@ -48,13 +47,13 @@ public class Decoder extends Wrapper {
         ands[22]= new And("D22",not0.getOutput(0),getInput(1),getInput(2),not3.getOutput(0),getInput(4));
         ands[23]= new And("D23",getInput(0),getInput(1),getInput(2),not3.getOutput(0),getInput(4));
         ands[24]= new And("D24",not0.getOutput(0),not1.getOutput(0),not2.getOutput(0),getInput(3),getInput(4));
-        ands[25]= new And("D25",not0.getOutput(0),not1.getOutput(0),not2.getOutput(0),getInput(3),getInput(4));
-        ands[26]= new And("D26",not0.getOutput(0),not1.getOutput(0),not2.getOutput(0),getInput(3),getInput(4));
-        ands[27]= new And("D27",not0.getOutput(0),not1.getOutput(0),not2.getOutput(0),getInput(3),getInput(4));
+        ands[25]= new And("D25",getInput(0),not1.getOutput(0),not2.getOutput(0),getInput(3),getInput(4));
+        ands[26]= new And("D26",not0.getOutput(0),getInput(1),not2.getOutput(0),getInput(3),getInput(4));
+        ands[27]= new And("D27",getInput(0),getInput(1),not2.getOutput(0),getInput(3),getInput(4));
         ands[28]= new And("D28",not0.getOutput(0),not1.getOutput(0),getInput(2),getInput(3),getInput(4));
-        ands[29]= new And("D29",not0.getOutput(0),not1.getOutput(0),getInput(2),getInput(3),getInput(4));
-        ands[30]= new And("D30",not0.getOutput(0),not1.getOutput(0),getInput(2),getInput(3),getInput(4));
-        ands[31]= new And("D31",not0.getOutput(0),not1.getOutput(0),getInput(2),getInput(3),getInput(4));
+        ands[29]= new And("D29",getInput(0),not1.getOutput(0),getInput(2),getInput(3),getInput(4));
+        ands[30]= new And("D30",not0.getOutput(0),getInput(1),getInput(2),getInput(3),getInput(4));
+        ands[31]= new And("D31",getInput(0),getInput(1),getInput(2),getInput(3),getInput(4));
         for (int i=0; i<32;++i) {
         	addOutput(ands[i].getOutput(0));
         }

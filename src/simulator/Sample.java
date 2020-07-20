@@ -146,8 +146,13 @@ public class Sample {
     	
     	//making pc 
     	Link[] l = new Link[32];
-    	for(int i =0; i < 32 ; i++)
+    	for(int i =0; i < 27; i++)
     		l[i] = Simulator.trueLogic;
+    	for(int i=27;i<32;i++)
+    		l[i] = Simulator.falseLogic;
+    	for(int i=0;i<3;i++)
+    		l[i]=Simulator.falseLogic;
+
   
     	Register pc = new Register("PC","33X32",clk.getOutput(0));
     	pc.addInput(l);
@@ -158,8 +163,8 @@ public class Sample {
     	InstructionMem.addInput(controler);
     	
     	Link [] instructionMemoryInput = new Link[16]; 
-    	for(int i=0 ;i<16; i++) 
-    		instructionMemoryInput[i] = pc.getOutput(i);
+    	for(int i=16,j=0 ;i<32 && j<16; i++) 
+    		instructionMemoryInput[j++] = pc.getOutput(i);
     	InstructionMem.addInput(instructionMemoryInput);
     	
     	Link [] data = new Link[32];
@@ -279,7 +284,7 @@ public class Sample {
     	
 
 
-        Simulator.debugger.addTrackItem(clk,pc);
+        Simulator.debugger.addTrackItem(clk,InstructionMem);
         System.out.println();
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
