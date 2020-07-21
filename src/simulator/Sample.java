@@ -11,6 +11,7 @@ import simulator.gates.combinational.Not;
 import simulator.gates.sequential.Clock;
 import simulator.gates.sequential.flipflops.DFlipFlop;
 import simulator.network.Link;
+import simulator.wrapper.Multiply4;
 import simulator.wrapper.wrappers.*;
 
 public class Sample {
@@ -24,10 +25,23 @@ public class Sample {
 	static Link Branch;
 	static Link ALUop1;
 	static Link ALUop0;
+	static Link Jump;
 	
 	
 	
-    public static Link getRegDst() {
+    public static Link getJump() {
+		return Jump;
+	}
+
+
+
+	public static void setJump(Link jump) {
+		Jump = jump;
+	}
+
+
+
+	public static Link getRegDst() {
 		return RegDst;
 	}
 
@@ -139,37 +153,49 @@ public class Sample {
 		
     	Clock clk = new Clock("CLOCK",1000);
     	
-		//Dflipflop for cycle and controler
-    	DFlipFlop d1 = new DFlipFlop("d1",clk.getOutput(0),Simulator.trueLogic);
-    	Not n1 = new Not("NOT1",d1.getOutput(0));
-    	Link controler = n1.getOutput(0);
+//		//Dflipflop for cycle and controler
+//    	DFlipFlop d1 = new DFlipFlop("d1",clk.getOutput(0),Simulator.trueLogic);
+//    	Not n1 = new Not("NOT1",d1.getOutput(0));
+//    	Link controler = n1.getOutput(0);
+    	Link controler = Simulator.trueLogic;
     	
-    	//making pc 
-    	Link[] l = new Link[32];
-    	for(int i =0; i < 27; i++)
-    		l[i] = Simulator.trueLogic;
-    	for(int i=27;i<32;i++)
-    		l[i] = Simulator.falseLogic;
-    	for(int i=0;i<3;i++)
-    		l[i]=Simulator.falseLogic;
+//    	//making pc 
+//    	Link[] l = new Link[32];
+//    	for(int i =0; i < 27; i++)
+//    		l[i] = Simulator.trueLogic;
+//    	for(int i=27;i<32;i++)
+//    		l[i] = Simulator.falseLogic;
+
 
   
     	Register pc = new Register("PC","33X32",clk.getOutput(0));
-    	pc.addInput(l);
+//    	pc.addInput(l);
+    	
+    	//adding 32 to pc 
+    	Adder pcadder = new Adder("adder","64X32");
+    	for(int i=0;i<32;i++)
+    		pcadder.addInput(pc.getOutput(i));
+    	Link[] thirtytwo = new Link[32];
+    	for(int i=0;i<32;i++)
+    		thirtytwo[i]=Simulator.falseLogic;
+    	thirtytwo[27]=Simulator.trueLogic;
+    		
     	
     	
     	//giving the address to instruction memory    	
     	Memory InstructionMem = new Memory("InstructionMem");
     	InstructionMem.addInput(controler);
     	
-    	Link [] instructionMemoryInput = new Link[16]; 
+    	Link [] instructionMemoryaddress = new Link[16]; 
     	for(int i=16,j=0 ;i<32 && j<16; i++) 
-    		instructionMemoryInput[j++] = pc.getOutput(i);
-    	InstructionMem.addInput(instructionMemoryInput);
+    		instructionMemoryaddress[j++] = pc.getOutput(i);
+    	InstructionMem.addInput(instructionMemoryaddress);
     	
     	Link [] data = new Link[32];
     	for(int i =0; i < 32 ; i++)
     		data[i] = Simulator.trueLogic;
+    	data[31]=Simulator.falseLogic;
+    	data[29]=Simulator.falseLogic;
     	InstructionMem.addInput(data);
     	
     	
@@ -181,10 +207,13 @@ public class Sample {
     	Link[] addressOfsset = new Link[16];
     	Link[] funct = new Link[6];
     	Link[] shamt = new Link[5];
+    	Link[] jumpaddress = new Link[26];
     	
     	for(int i =0 ;i<6 ;i++) {
     		opcode[i]=InstructionMem.getOutput(i);
     	}
+    	for(int i=0 ;i<26;i++)
+    		jumpaddress[i]=InstructionMem.getOutput(i+6);
     	for(int i =4 ; i>=0; i--) {
     		rs[4-i]=InstructionMem.getOutput(i+6);
     	}
@@ -201,38 +230,22 @@ public class Sample {
     		shamt[i]=InstructionMem.getOutput(i+21);
     	}
     	for(int i =0 ; i<6 ; i++) {
-    		funct[i]=InstructionMem.getOutput(i+26);
+    		funct[5-i]=InstructionMem.getOutput(i+26);
     	}
     	
-        //data of 32 register    
-
-//    	Link [] links= new Link[1024];
-//    	for(int i=0; i<32;++i) {
-//    		links[i]=Simulator.trueLogic;
-//    	}
-//    	links[0]=Simulator.falseLogic;
-//    	for(int i=32;i<1024;++i) {
-//    		links[i]=Simulator.falseLogic;
-//    	}
-//
-//    	
-//    	Wide32Mux32x1 mp= new Wide32Mux32x1("hello","1029X32",Simulator.trueLogic,Simulator.falseLogic,Simulator.falseLogic,Simulator.falseLogic,Simulator.falseLogic);
-//    	for(int i=0;i<1024;++i) {
-//    		mp.addInput(links[i]);
-//    	}
-//    	
-//    	Link[] regs = new Link[64];
-//    	for(int i=0;i<64;i++) {
-//    		regs[i]=Simulator.trueLogic;
-//    	}
-//    	regs[1]=Simulator.falseLogic;
-//    	regs[32]=Simulator.falseLogic;
+    	//Jump
+    	Link[] nextpcJ = new Link[32];
+    	Multiply4 shiftleft2 = new Multiply4("shl2","26X28",jumpaddress);
     	
-    	
+    	for(int i=0;i<4;i++)
+    		nextpcJ[i]=pc.getOutput(i);
+    	for(int i=0;i<28;i++)
+    		nextpcJ[i+4]=shiftleft2.getOutput(i);
 
-    	//control unit 
-    	MainControl cu = new MainControl("cu","6X9");
+    	//main control unit 
+    	MainControl cu = new MainControl("cu","6X10");
     	cu.addInput(opcode);
+
     	
 		setRegDst(cu.getOutput(0));
 		setMemToReg(cu.getOutput(1));
@@ -244,6 +257,7 @@ public class Sample {
 		setALUSrc(cu.getOutput(7));
 		Not notregwrite = new Not("not",cu.getOutput(8));
 		setRegWrite(notregwrite.getOutput(0));
+		setJump(cu.getOutput(9));
 		
 
     	//register file     	
@@ -256,7 +270,7 @@ public class Sample {
     	secondregmux.addInput(rt);
     	secondregmux.addInput(rd);
     	And[] ands= new And[32];
-    	Decoder decoder= new Decoder("DEC","5X32",rd[0],rd[1],rd[2],rd[3],rd[4]);
+   	Decoder decoder= new Decoder("DEC","5X32",rd[0],rd[1],rd[2],rd[3],rd[4]);
     	for(int i=0;i<32;++i) {
     		ands[i]= new And("a"+i,decoder.getOutput(i),RegWrite);
     	}
@@ -281,11 +295,83 @@ public class Sample {
     	}
     	
     	
+
+    	
+    	//EX 
+    	
+    	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
+    	
+    	SignExtend16To32 signEx = new SignExtend16To32("extend","16X32");
+    	signEx.addInput(addressOfsset);
+    	
+       	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
+       	for(int i=0;i<32;i++)
+       		EXmux.addInput(MUX2.getOutput(i));  	
+       	for(int i=0;i<32;i++)
+       		EXmux.addInput(signEx.getOutput(i));
     	
 
+    	ALU alu = new ALU("alu","68X33");
+    	for(int i=0;i<4;i++)
+    		alu.addInput(alucontrol.getOutput(i));
+    	for(int i=0;i<32;i++)
+    		alu.addInput(MUX1.getOutput(i));
+    	for(int i=0;i<32;i++)
+    		alu.addInput(EXmux.getOutput(i));
+    	
+    	//address of branch target
+    	Link[] addressofsset = new Link[32];
+    	for(int i=0;i<32;i++)
+    		addressofsset[i]=signEx.getOutput(i);
+    	Multiply4 shiftleft2_2 = new Multiply4("multiply4","32X34",addressofsset);
+    	Adder branchadder = new Adder("adder","64X32");
+    	for(int i=0;i<32;i++)
+    		branchadder.addInput(pcadder.getOutput(i));
+    	for(int i=0;i<32;i++)
+    		branchadder.addInput(shiftleft2_2.getOutput(i+2));
+    	And branchand = new And("and",alu.getOutput(32),Branch);
+    	Wide32Mux2x1 branchmux = new Wide32Mux2x1("mux","65X32",branchand.getOutput(0));
+    	for(int i=0 ;i<32;i++)
+    		branchmux.addInput(pcadder.getOutput(i));
+    	for(int i=0;i<32;i++)
+    		branchmux.addInput(branchadder.getOutput(i));
+    	
+    	//jump mux
+    	Wide32Mux2x1 jumpmux = new Wide32Mux2x1("jumpmux","65X32",Jump);
+    	for(int i=0;i<32;i++)
+    		jumpmux.addInput(branchmux.getOutput(i));
+    	for(int i=0;i<32;i++)
+    		jumpmux.addInput(nextpcJ);
+    	
+    	
+    	//access data in memory
+    	Memory datamemory = new Memory("DataMem");
+    	datamemory.addInput(MemWrite);//cause in Memory class we just get one control signal and if it is true we write otherwise we read so i just put MemWrite to it
+    	for(int i=0;i<16;i++)
+    		datamemory.addInput(alu.getOutput(i+16));
+    	for(int i=0;i<32;i++)
+    		datamemory.addInput(MUX2.getOutput(i));
+    	
+    	
+    	//WB
+       	Wide32Mux2x1 WBmux = new Wide32Mux2x1("m","65X32",MemToReg);
+       	for(int i=0;i<32;i++)
+       		WBmux.addInput(alu.getOutput(i));  	
+       	for(int i=0;i<32;i++)
+       		WBmux.addInput(datamemory.getOutput(i));
+       	
+       	for(int i=0 ;i<32;i++)
+       		WriteData[i]=WBmux.getOutput(i);
+       	
+       	//puting next pc in pc 
+       	for(int i=0;i<32;i++)
+       		pc.addInput(jumpmux.getOutput(i));
+       	
+       	
+    	
+    	
 
-        Simulator.debugger.addTrackItem(clk,InstructionMem);
-        System.out.println();
+        Simulator.debugger.addTrackItem(clk);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 

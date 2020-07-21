@@ -34,10 +34,10 @@ public class AluControl extends Wrapper {
 		or2.addInput(not2.getOutput(0),not3.getOutput(0));//Operation1
 		or3.addInput(getInput(2),getInput(5));
 		and3.addInput(getInput(1),or3.getOutput(0));//Operation0
-		addOutput(and3.getOutput(0));
-		addOutput(or2.getOutput(0));
-		addOutput(or1.getOutput(0));
 		addOutput(and1.getOutput(0));
+		addOutput(or1.getOutput(0));
+		addOutput(or2.getOutput(0));
+		addOutput(and3.getOutput(0));
 		
 		
 	}
