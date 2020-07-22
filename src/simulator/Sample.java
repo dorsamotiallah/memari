@@ -9,7 +9,6 @@ import simulator.gates.combinational.And;
 import simulator.gates.combinational.Memory;
 import simulator.gates.combinational.Not;
 import simulator.gates.sequential.Clock;
-import simulator.gates.sequential.flipflops.DFlipFlop;
 import simulator.network.Link;
 import simulator.wrapper.Multiply4;
 import simulator.wrapper.wrappers.*;
@@ -26,7 +25,6 @@ public class Sample {
 	static Link ALUop1;
 	static Link ALUop0;
 	static Link Jump;
-	
 	
 	
     public static Link getJump() {
@@ -153,26 +151,30 @@ public class Sample {
 		
     	Clock clk = new Clock("CLOCK",1000);
     	
-//		//Dflipflop for cycle and controler
-//    	DFlipFlop d1 = new DFlipFlop("d1",clk.getOutput(0),Simulator.trueLogic);
-//    	Not n1 = new Not("NOT1",d1.getOutput(0));
-//    	Link controler = n1.getOutput(0);
-    	Link controler = Simulator.trueLogic;
+		//Dflipflop for cycle and controler
+    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.trueLogic);
+    	Not n1 = new Not("NOT1",d1.getOutput(0));
+    	Link controler = n1.getOutput(0);
+    	controler = Simulator.trueLogic;
     	
 //    	//making pc 
-//    	Link[] l = new Link[32];
-//    	for(int i =0; i < 27; i++)
-//    		l[i] = Simulator.trueLogic;
-//    	for(int i=27;i<32;i++)
-//    		l[i] = Simulator.falseLogic;
+    	Link[] l = new Link[32];
+    	for(int i =0; i < 27; i++)
+    		l[i] = Simulator.trueLogic;
+    	for(int i=27;i<32;i++)
+    		l[i] = Simulator.falseLogic;
 
-
-  
     	Register pc = new Register("PC","33X32",clk.getOutput(0));
-//    	pc.addInput(l);
+    	pc.addInput(l);
     	
     	//adding 32 to pc 
+    	Link[] adder4= new Link[32];
+    	for(int i=0;i<32;++i) {
+    		adder4[i]=Simulator.falseLogic;
+    	}
+    	adder4[29]=Simulator.trueLogic;
     	Adder pcadder = new Adder("adder","64X32");
+    	pcadder.addInput(adder4);
     	for(int i=0;i<32;i++)
     		pcadder.addInput(pc.getOutput(i));
     	Link[] thirtytwo = new Link[32];
@@ -191,6 +193,7 @@ public class Sample {
     		instructionMemoryaddress[j++] = pc.getOutput(i);
     	InstructionMem.addInput(instructionMemoryaddress);
     	
+    	//giving the data to instruction memory for write mode
     	Link [] data = new Link[32];
     	for(int i =0; i < 32 ; i++)
     		data[i] = Simulator.trueLogic;
@@ -198,7 +201,7 @@ public class Sample {
     	data[29]=Simulator.falseLogic;
     	InstructionMem.addInput(data);
     	
-    	
+  
     	//sepration of bits of instruction
     	Link[] opcode = new Link[6];
     	Link[] rs = new Link[5];
@@ -235,7 +238,7 @@ public class Sample {
     	
     	//Jump
     	Link[] nextpcJ = new Link[32];
-    	Multiply4 shiftleft2 = new Multiply4("shl2","26X28",jumpaddress);
+    	Shift shiftleft2 = new Shift("shl2","26X28",jumpaddress);
     	
     	for(int i=0;i<4;i++)
     		nextpcJ[i]=pc.getOutput(i);
@@ -255,10 +258,8 @@ public class Sample {
 		setALUop1(cu.getOutput(5));
 		setALUop0(cu.getOutput(6));
 		setALUSrc(cu.getOutput(7));
-		Not notregwrite = new Not("not",cu.getOutput(8));
-		setRegWrite(notregwrite.getOutput(0));
+		setRegWrite(cu.getOutput(8));
 		setJump(cu.getOutput(9));
-		
 
     	//register file     	
     	Register [] Reg= new Register[32];
@@ -304,7 +305,7 @@ public class Sample {
     	SignExtend16To32 signEx = new SignExtend16To32("extend","16X32");
     	signEx.addInput(addressOfsset);
     	
-       	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
+      	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
        	for(int i=0;i<32;i++)
        		EXmux.addInput(MUX2.getOutput(i));  	
        	for(int i=0;i<32;i++)
@@ -323,12 +324,12 @@ public class Sample {
     	Link[] addressofsset = new Link[32];
     	for(int i=0;i<32;i++)
     		addressofsset[i]=signEx.getOutput(i);
-    	Multiply4 shiftleft2_2 = new Multiply4("multiply4","32X34",addressofsset);
+    	Multiply4 shiftleft2_2 = new Multiply4("multiply4","32X32",addressofsset);
     	Adder branchadder = new Adder("adder","64X32");
     	for(int i=0;i<32;i++)
     		branchadder.addInput(pcadder.getOutput(i));
     	for(int i=0;i<32;i++)
-    		branchadder.addInput(shiftleft2_2.getOutput(i+2));
+    		branchadder.addInput(shiftleft2_2.getOutput(i));
     	And branchand = new And("and",alu.getOutput(32),Branch);
     	Wide32Mux2x1 branchmux = new Wide32Mux2x1("mux","65X32",branchand.getOutput(0));
     	for(int i=0 ;i<32;i++)
@@ -341,7 +342,7 @@ public class Sample {
     	for(int i=0;i<32;i++)
     		jumpmux.addInput(branchmux.getOutput(i));
     	for(int i=0;i<32;i++)
-    		jumpmux.addInput(nextpcJ);
+    		jumpmux.addInput(nextpcJ[i]);
     	
     	
     	//access data in memory
@@ -358,7 +359,7 @@ public class Sample {
        	for(int i=0;i<32;i++)
        		WBmux.addInput(alu.getOutput(i));  	
        	for(int i=0;i<32;i++)
-       		WBmux.addInput(datamemory.getOutput(i));
+       		WBmux.addInput(Simulator.falseLogic);
        	
        	for(int i=0 ;i<32;i++)
        		WriteData[i]=WBmux.getOutput(i);
@@ -371,7 +372,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk);
+        Simulator.debugger.addTrackItem(clk,InstructionMem);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 

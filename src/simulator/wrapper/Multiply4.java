@@ -5,7 +5,7 @@ import simulator.network.Link;
 
 public class Multiply4 extends Wrapper {
 
-	public Multiply4(String label, String stream, Link[] links) {
+	public Multiply4(String label, String stream, Link... links) {
 		super(label, stream, links);
 		// TODO Auto-generated constructor stub
 	}
@@ -14,14 +14,20 @@ public class Multiply4 extends Wrapper {
 	public void initialize() {
 		// TODO Auto-generated method stub
 
+		System.out.println(inputSize);
 		
+		int j=0;
 		for (int i = 2 ; i < inputSize ; i++) {
 			addOutput(getInput(i));
+			++j;
 		}
 		
 		
 		addOutput(Simulator.falseLogic);
 		addOutput(Simulator.falseLogic);
+		j=j+2;
+		System.out.println(j);
+		
 	}
 
 }
