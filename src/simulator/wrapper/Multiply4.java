@@ -14,7 +14,7 @@ public class Multiply4 extends Wrapper {
 	public void initialize() {
 		// TODO Auto-generated method stub
 
-		System.out.println(inputSize);
+
 		
 		int j=0;
 		for (int i = 2 ; i < inputSize ; i++) {
@@ -26,7 +26,7 @@ public class Multiply4 extends Wrapper {
 		addOutput(Simulator.falseLogic);
 		addOutput(Simulator.falseLogic);
 		j=j+2;
-		System.out.println(j);
+
 		
 	}
 

@@ -151,21 +151,22 @@ public class Sample {
 		
     	Clock clk = new Clock("CLOCK",1000);
     	
-		//Dflipflop for cycle and controler
-    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.trueLogic);
-    	Not n1 = new Not("NOT1",d1.getOutput(0));
-    	Link controler = n1.getOutput(0);
-    	controler = Simulator.trueLogic;
     	
-//    	//making pc 
-    	Link[] l = new Link[32];
+		//Dflipflop for cycle and controler
+//    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.trueLogic);
+//    	Not n1 = new Not("NOT1",d1.getOutput(0));
+//    	Link controler = n1.getOutput(0);
+//    	controler = Simulator.trueLogic;
+    	
+    	//making pc 
+    	Link[] instruction = new Link[32];
     	for(int i =0; i < 27; i++)
-    		l[i] = Simulator.trueLogic;
+    		instruction[i] = Simulator.trueLogic;
     	for(int i=27;i<32;i++)
-    		l[i] = Simulator.falseLogic;
+    		instruction[i] = Simulator.falseLogic;
 
     	Register pc = new Register("PC","33X32",clk.getOutput(0));
-    	pc.addInput(l);
+    	pc.addInput(instruction);
     	
     	//adding 32 to pc 
     	Link[] adder4= new Link[32];
@@ -184,9 +185,9 @@ public class Sample {
     		
     	
     	
-    	//giving the address to instruction memory    	
+    	//giving the address to instruction memory for reading from it   	
     	Memory InstructionMem = new Memory("InstructionMem");
-    	InstructionMem.addInput(controler);
+    	InstructionMem.addInput(Simulator.falseLogic);
     	
     	Link [] instructionMemoryaddress = new Link[16]; 
     	for(int i=16,j=0 ;i<32 && j<16; i++) 
