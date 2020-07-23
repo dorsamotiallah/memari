@@ -173,7 +173,7 @@ public class Sample {
     	pcadder.addInput(thirtytwo); 
     	
     	//initalizing instruction memory 
-    	Boolean[] initinstruction = new Boolean[65536];
+    	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,
     	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false};
     	for(int i=0;i<288;i++) {
     		initinstruction[i]=instructions[i];
@@ -252,25 +252,21 @@ public class Sample {
 		setRegWrite(cu.getOutput(8));
 		setJump(cu.getOutput(9));
 
-    	//register file     	
+    	//register file     	    	
     	Register [] Reg= new Register[32];
     	Link[] WriteData= new Link[32];
-    	for(int i=0;i<32;i++) {
-    		WriteData[i]=Simulator.falseLogic;
-    	}
+    	
     	Wide5Mux2x1 secondregmux = new Wide5Mux2x1("mux5","11X5",RegDst);
     	secondregmux.addInput(rt);
     	secondregmux.addInput(rd);
     	And[] ands= new And[32];
-   	Decoder decoder= new Decoder("DEC","5X32",rd[0],rd[1],rd[2],rd[3],rd[4]);
+     	Decoder decoder= new Decoder("DEC","5X32",rd[0],rd[1],rd[2],rd[3],rd[4]);
     	for(int i=0;i<32;++i) {
     		ands[i]= new And("a"+i,decoder.getOutput(i),RegWrite);
     	}
     	for(int i=0; i<32;++i) {
     		Reg[i]= new Register("h"+i, "33X32",ands[i].getOutput(0));
-    		for(int j=0; j<32;++j) {
-    			Reg[i].addInput(WriteData[j]);
-    		}
+    		
     	}
     	Wide32Mux32x1 MUX1 = new Wide32Mux32x1("MUX1","1029X32",rs[0],rs[1],rs[2],rs[3],rs[4]);
     	
@@ -286,21 +282,27 @@ public class Sample {
     		}
     	}
     	
-    	
 
     	
     	//EX 
     	
-    	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
-    	
+
+    		//preparing 32 bit ofsset*32
     	SignExtend16To32 signEx = new SignExtend16To32("extend","16X32");
     	signEx.addInput(ofssetImmediate);
+    	Link[] addressofsset = new Link[32];
+    	for(int i=0;i<32;i++)
+    		addressofsset[i]=signEx.getOutput(i);
+    	Shiftleft5 shiftleft2_2 = new Shiftleft5("multiply32","32X32",addressofsset);
+    	
+    	
+    	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
     	
       	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
        	for(int i=0;i<32;i++)
        		EXmux.addInput(MUX2.getOutput(i));  	
        	for(int i=0;i<32;i++)
-       		EXmux.addInput(signEx.getOutput(i));
+       		EXmux.addInput(shiftleft2_2.getOutput(i));
     	
 
     	ALU alu = new ALU("alu","68X33");
@@ -312,10 +314,6 @@ public class Sample {
     		alu.addInput(EXmux.getOutput(i));
     	
     	//address of branch target
-    	Link[] addressofsset = new Link[32];
-    	for(int i=0;i<32;i++)
-    		addressofsset[i]=signEx.getOutput(i);
-    	Shiftleft5 shiftleft2_2 = new Shiftleft5("multiply4","32X32",addressofsset);
     	Adder branchadder = new Adder("adder","64X32");
     	for(int i=0;i<32;i++)
     		branchadder.addInput(pcadder.getOutput(i));
@@ -354,7 +352,7 @@ public class Sample {
     		datamemory.addInput(MUX2.getOutput(i));
     	
     	
-    	//WB
+    	//WB       	
        	Wide32Mux2x1 WBmux = new Wide32Mux2x1("m","65X32",MemToReg);
        	for(int i=0;i<32;i++)
        		WBmux.addInput(alu.getOutput(i));  	
@@ -363,6 +361,11 @@ public class Sample {
        	
        	for(int i=0 ;i<32;i++)
        		WriteData[i]=WBmux.getOutput(i);
+       	for(int i=0;i<32;++i) {
+       	for(int j=0; j<32;++j) {
+			Reg[i].addInput(WriteData[j]);
+		}
+       	}
        	
        	//puting next pc in pc 
        	for(int i=0;i<32;i++)
@@ -372,7 +375,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,InstructionMem);
+        Simulator.debugger.addTrackItem(clk,pc,InstructionMem,shiftleft2_2);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 
