@@ -173,15 +173,23 @@ public class Sample {
     	pcadder.addInput(thirtytwo); 
     	
     	//initalizing instruction memory 
-    	Boolean[] initinstruction = new Boolean[65536];//
-    	Boolean[] instructions= {false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false};
-    	for(int i=0;i<288;i++) {
+    	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
+    	//two lw
+    	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true};
+    	for(int i=0;i<64;i++) {//288
     		initinstruction[i]=instructions[i];
     	}
-    	for(int i=288 ;i<65536;i++) {
+    	for(int i=64 ;i<65536;i++) {
     		initinstruction[i]=false;
     	}
-    	
+//    	//one lw 
+//    	Boolean[] instructions = {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
+//    	for(int i=0;i<32;i++) {//288
+//    		initinstruction[i]=instructions[i];
+//    	}
+//    	for(int i=32 ;i<65536;i++) {
+//    		initinstruction[i]=false;
+    		
     	//giving the address to instruction memory for reading from it   	
     	Memory InstructionMem = new Memory("InstructionMem");
     	InstructionMem.setMemory(initinstruction);//seting the instructions
@@ -357,7 +365,7 @@ public class Sample {
        	for(int i=0;i<32;i++)
        		WBmux.addInput(alu.getOutput(i));  	
        	for(int i=0;i<32;i++)
-       		WBmux.addInput(Simulator.falseLogic);
+       		WBmux.addInput(datamemory.getOutput(i));
        	
        	for(int i=0 ;i<32;i++)
        		WriteData[i]=WBmux.getOutput(i);
@@ -375,7 +383,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,shiftleft2,cu,jumpmux);
+        Simulator.debugger.addTrackItem(clk,pc,Reg[9],Reg[10],alu,WBmux);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 
