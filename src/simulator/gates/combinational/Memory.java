@@ -4,11 +4,11 @@ import simulator.network.Link;
 import simulator.network.Node;
 
 public class Memory extends Node {
-    private Boolean[] memory= new Boolean[65536];
+    private Boolean[] memory;
 
     public Memory(String label, Link... links) {
         super(label, links);
-        
+        memory= new Boolean[65536];
         for (int i = 0; i < 32; ++i) {
             addOutputLink(false);
         }

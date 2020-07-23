@@ -153,54 +153,43 @@ public class Sample {
     	
     	
 		//Dflipflop for cycle and controler
-//    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.trueLogic);
-//    	Not n1 = new Not("NOT1",d1.getOutput(0));
-//    	Link controler = n1.getOutput(0);
-//    	controler = Simulator.trueLogic;
-    	
-    	//making pc 
-    	Link[] instruction = new Link[32];
-    	for(int i =0; i < 27; i++)
-    		instruction[i] = Simulator.trueLogic;
-    	for(int i=27;i<32;i++)
-    		instruction[i] = Simulator.falseLogic;
+    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.falseLogic);
+    	DFlipFlop d2 = new DFlipFlop("d2","2X2",clk.getOutput(0),d1.getOutput(0));
+    	Not n1 = new Not("NOT1",d2.getOutput(0));
+    	Link controler = n1.getOutput(0);
 
-    	Register pc = new Register("PC","33X32",clk.getOutput(0));
-    	pc.addInput(instruction);
+    
+    	Register pc = new Register("PC","33X32",clk.getOutput(0));//starts with zero
+
     	
     	//adding 32 to pc 
-    	Link[] adder4= new Link[32];
-    	for(int i=0;i<32;++i) {
-    		adder4[i]=Simulator.falseLogic;
-    	}
-    	adder4[29]=Simulator.trueLogic;
     	Adder pcadder = new Adder("adder","64X32");
-    	pcadder.addInput(adder4);
     	for(int i=0;i<32;i++)
     		pcadder.addInput(pc.getOutput(i));
     	Link[] thirtytwo = new Link[32];
     	for(int i=0;i<32;i++)
     		thirtytwo[i]=Simulator.falseLogic;
     	thirtytwo[27]=Simulator.trueLogic;
-    		
     	
+    	//initalizing instruction memory 
+    	Boolean[] initinstruction = new Boolean[65536];
+    	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,true,false,false,false,true,true,false,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,true,false,true,false,true,true,false,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false};
+    	for(int i=0;i<1024;i++) {
+    		initinstruction[i]=instructions[i];
+    	}
+    	for(int i=1024 ;i<65536;i++) {
+    		initinstruction[i]=false;
+    	}
     	
     	//giving the address to instruction memory for reading from it   	
     	Memory InstructionMem = new Memory("InstructionMem");
-    	InstructionMem.addInput(Simulator.falseLogic);
+    	InstructionMem.setMemory(initinstruction);//seting the instructions
+    	InstructionMem.addInput(Simulator.falseLogic);//we only read from instruction memory
     	
     	Link [] instructionMemoryaddress = new Link[16]; 
     	for(int i=16,j=0 ;i<32 && j<16; i++) 
     		instructionMemoryaddress[j++] = pc.getOutput(i);
     	InstructionMem.addInput(instructionMemoryaddress);
-    	
-    	//giving the data to instruction memory for write mode
-    	Link [] data = new Link[32];
-    	for(int i =0; i < 32 ; i++)
-    		data[i] = Simulator.trueLogic;
-    	data[31]=Simulator.falseLogic;
-    	data[29]=Simulator.falseLogic;
-    	InstructionMem.addInput(data);
     	
   
     	//sepration of bits of instruction
@@ -208,7 +197,7 @@ public class Sample {
     	Link[] rs = new Link[5];
     	Link[] rt = new Link[5];
     	Link[] rd = new Link[5];
-    	Link[] addressOfsset = new Link[16];
+    	Link[] ofssetImmediate = new Link[16];
     	Link[] funct = new Link[6];
     	Link[] shamt = new Link[5];
     	Link[] jumpaddress = new Link[26];
@@ -228,7 +217,7 @@ public class Sample {
     		rd[4-i]=InstructionMem.getOutput(i+16);
     	}
     	for(int i =0 ; i<16;i++) {
-    		addressOfsset[i]=InstructionMem.getOutput(i+16);
+    		ofssetImmediate[i]=InstructionMem.getOutput(i+16);
     	}
     	for(int i =0; i<5; i++) {
     		shamt[i]=InstructionMem.getOutput(i+21);
@@ -304,7 +293,7 @@ public class Sample {
     	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
     	
     	SignExtend16To32 signEx = new SignExtend16To32("extend","16X32");
-    	signEx.addInput(addressOfsset);
+    	signEx.addInput(ofssetImmediate);
     	
       	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
        	for(int i=0;i<32;i++)
@@ -325,7 +314,7 @@ public class Sample {
     	Link[] addressofsset = new Link[32];
     	for(int i=0;i<32;i++)
     		addressofsset[i]=signEx.getOutput(i);
-    	Multiply4 shiftleft2_2 = new Multiply4("multiply4","32X32",addressofsset);
+    	Shiftleft5 shiftleft2_2 = new Shiftleft5("multiply4","32X32",addressofsset);
     	Adder branchadder = new Adder("adder","64X32");
     	for(int i=0;i<32;i++)
     		branchadder.addInput(pcadder.getOutput(i));
@@ -345,9 +334,18 @@ public class Sample {
     	for(int i=0;i<32;i++)
     		jumpmux.addInput(nextpcJ[i]);
     	
+    	//initalizing datad memory 
+    	Boolean[] initdata = new Boolean[65536];
+    	Boolean[] tempdata = {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true};
+    	for(int i=0;i<64 ;i++)
+    		initdata[i]=tempdata[i];
+    	for(int i=64;i<65536 ;i++)
+    		initdata[i]=false;
+    	
     	
     	//access data in memory
     	Memory datamemory = new Memory("DataMem");
+    	datamemory.setMemory(initdata);
     	datamemory.addInput(MemWrite);//cause in Memory class we just get one control signal and if it is true we write otherwise we read so i just put MemWrite to it
     	for(int i=0;i<16;i++)
     		datamemory.addInput(alu.getOutput(i+16));
