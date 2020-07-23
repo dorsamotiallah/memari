@@ -170,14 +170,15 @@ public class Sample {
     	for(int i=0;i<32;i++)
     		thirtytwo[i]=Simulator.falseLogic;
     	thirtytwo[27]=Simulator.trueLogic;
+    	pcadder.addInput(thirtytwo);
     	
     	//initalizing instruction memory 
     	Boolean[] initinstruction = new Boolean[65536];
     	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,true,false,false,false,true,true,false,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,true,false,true,false,true,true,false,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false};
-    	for(int i=0;i<1024;i++) {
+    	for(int i=0;i<320;i++) {
     		initinstruction[i]=instructions[i];
     	}
-    	for(int i=1024 ;i<65536;i++) {
+    	for(int i=320 ;i<65536;i++) {
     		initinstruction[i]=false;
     	}
     	
@@ -371,7 +372,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,InstructionMem);
+        Simulator.debugger.addTrackItem(clk,pc,InstructionMem);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 
