@@ -173,8 +173,8 @@ public class Sample {
     	pcadder.addInput(thirtytwo); 
     	
     	//initalizing instruction memory 
-    	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,
-    	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false};
+    	Boolean[] initinstruction = new Boolean[65536];//
+    	Boolean[] instructions= {false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false};
     	for(int i=0;i<288;i++) {
     		initinstruction[i]=instructions[i];
     	}
@@ -206,7 +206,7 @@ public class Sample {
     	for(int i =0 ;i<6 ;i++) {
     		opcode[i]=InstructionMem.getOutput(i);
     	}
-    	for(int i=0 ;i<26;i++)
+    	for(int i=0 ;i<26;i++) 
     		jumpaddress[i]=InstructionMem.getOutput(i+6);
     	for(int i =4 ; i>=0; i--) {
     		rs[4-i]=InstructionMem.getOutput(i+6);
@@ -229,7 +229,7 @@ public class Sample {
     	
     	//Jump
     	Link[] nextpcJ = new Link[32];
-    	Shift shiftleft2 = new Shift("shl2","26X28",jumpaddress);
+    	Shift shiftleft2 = new Shift("shl2_28bit","26X28",jumpaddress);
     	
     	for(int i=0;i<4;i++)
     		nextpcJ[i]=pc.getOutput(i);
@@ -375,7 +375,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,InstructionMem,shiftleft2_2);
+        Simulator.debugger.addTrackItem(clk,pc,shiftleft2,cu,jumpmux);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 
