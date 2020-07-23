@@ -169,7 +169,7 @@ public class Sample {
     	Link[] thirtytwo = new Link[32];
     	for(int i=0;i<32;i++)
     		thirtytwo[i]=Simulator.falseLogic;
-    	thirtytwo[27]=Simulator.trueLogic;
+    	thirtytwo[26]=Simulator.trueLogic;
     	pcadder.addInput(thirtytwo); 
     	
     	//initalizing instruction memory 
