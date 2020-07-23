@@ -170,7 +170,7 @@ public class Sample {
     	for(int i=0;i<32;i++)
     		thirtytwo[i]=Simulator.falseLogic;
     	thirtytwo[27]=Simulator.trueLogic;
-    	pcadder.addInput(thirtytwo);
+    	pcadder.addInput(thirtytwo); 
     	
     	//initalizing instruction memory 
     	Boolean[] initinstruction = new Boolean[65536];
