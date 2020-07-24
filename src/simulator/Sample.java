@@ -354,8 +354,8 @@ public class Sample {
     	Memory datamemory = new Memory("DataMem");
     	datamemory.setMemory(initdata);
     	datamemory.addInput(MemWrite);//cause in Memory class we just get one control signal and if it is true we write otherwise we read so i just put MemWrite to it
-    	for(int i=0;i<16;i++)
-    		datamemory.addInput(alu.getOutput(i+16));
+    	for(int i=16;i<32;i++)
+    		datamemory.addInput(alu.getOutput(i));
     	for(int i=0;i<32;i++)
     		datamemory.addInput(MUX2.getOutput(i));
     	
