@@ -175,13 +175,13 @@ public class Sample {
     	//initalizing instruction memory 
     	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
     	//two lw
-    	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true};
-    	for(int i=0;i<64;i++) {//288
+    	Boolean[] instructions= {true,false,true,false,true,true,false,true,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true};
+    	for(int i=0;i<32;i++) {//288
     		initinstruction[i]=instructions[i];
     	}
-    	for(int i=64 ;i<65536;i++) {
-    		initinstruction[i]=false;
-    	}
+//    	for(int i=64 ;i<65536;i++) {
+//    		initinstruction[i]=false;
+//    	}
 //    	//one lw 
 //    	Boolean[] instructions = {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
 //    	for(int i=0;i<32;i++) {//288
@@ -268,9 +268,9 @@ public class Sample {
     	secondregmux.addInput(rt);
     	secondregmux.addInput(rd);
     	And[] ands= new And[32];
-     	Decoder decoder= new Decoder("DEC","5X32",rd[0],rd[1],rd[2],rd[3],rd[4]);
+     	Decoder decoder= new Decoder("DEC","5X32",secondregmux.getOutput(0),secondregmux.getOutput(1),secondregmux.getOutput(2),secondregmux.getOutput(3),secondregmux.getOutput(4));
     	for(int i=0;i<32;++i) {
-    		ands[i]= new And("a"+i,decoder.getOutput(i),RegWrite);
+    		ands[i]= new And("a"+i,decoder.getOutput(i),Simulator.trueLogic);
     	}
     	for(int i=0; i<32;++i) {
     		Reg[i]= new Register("h"+i, "33X32",ands[i].getOutput(0));
@@ -278,7 +278,7 @@ public class Sample {
     	}
     	Wide32Mux32x1 MUX1 = new Wide32Mux32x1("MUX1","1029X32",rs[0],rs[1],rs[2],rs[3],rs[4]);
     	
-    	Wide32Mux32x1 MUX2 = new Wide32Mux32x1("MUX2","1029X32",secondregmux.getOutput(0),secondregmux.getOutput(1),secondregmux.getOutput(2),secondregmux.getOutput(3),secondregmux.getOutput(4));
+    	Wide32Mux32x1 MUX2 = new Wide32Mux32x1("MUX2","1029X32",rt[0],rt[1],rt[2],rt[3],rt[4]);
     	for(int i=0; i<32;++i) {
     		for(int j=0; j<32;++j) {
     			MUX1.addInput(Reg[i].getOutput(j));
@@ -343,7 +343,7 @@ public class Sample {
     	
     	//initalizing datad memory 
     	Boolean[] initdata = new Boolean[65536];
-    	Boolean[] tempdata = {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true};
+    	Boolean[] tempdata = {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true};
     	for(int i=0;i<64 ;i++)
     		initdata[i]=tempdata[i];
     	for(int i=64;i<65536 ;i++)
@@ -354,8 +354,8 @@ public class Sample {
     	Memory datamemory = new Memory("DataMem");
     	datamemory.setMemory(initdata);
     	datamemory.addInput(MemWrite);//cause in Memory class we just get one control signal and if it is true we write otherwise we read so i just put MemWrite to it
-    	for(int i=0;i<16;i++)
-    		datamemory.addInput(alu.getOutput(i+16));
+    	for(int i=16;i<32;i++)
+    		datamemory.addInput(alu.getOutput(i));
     	for(int i=0;i<32;i++)
     		datamemory.addInput(MUX2.getOutput(i));
     	
@@ -383,7 +383,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,Reg[9],Reg[10],alu,WBmux);
+        Simulator.debugger.addTrackItem(clk,pc,Reg[8],datamemory,branchadder);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 

@@ -3,12 +3,19 @@ package simulator.gates.combinational;
 import simulator.network.Link;
 import simulator.network.Node;
 
+/* a bit-addressable memory with 4byte-word with 16bit address bus
+ *   in:
+ *       0 : write signal
+ *       1 -> 16: address
+ *       17 -> 48: data in
+ *   out:
+ *       0 -> 31 : data out */
 public class Memory extends Node {
     private Boolean[] memory;
 
     public Memory(String label, Link... links) {
         super(label, links);
-        memory= new Boolean[65536];
+        memory = new Boolean[65536];
         for (int i = 0; i < 32; ++i) {
             addOutputLink(false);
         }
@@ -27,24 +34,30 @@ public class Memory extends Node {
     }
 
     private void memoryWrite() {
+        int address = address();
+
         for(int i = 17; i < 49; ++i) {
-            memory[address() + i - 17] = getInput(i).getSignal();
+            if (address + i - 17 <= 65535) {
+                memory[address + i - 17] = getInput(i).getSignal();
+            }
         }
     }
 
     private void memoryRead(){
+        int address = address();
+
         for (int i = 0; i < 32; ++i) {
-            getOutput(i).setSignal(memory[address() + i]);
+            if (address + i <= 65535) {
+                getOutput(i).setSignal(memory[address + i]);
+            }
         }
     }
 
     @Override
     public void evaluate() {
-        if (getInput(0).getSignal()) {
+        if (getInput(0).getSignal())
             memoryWrite();
-        } else {
-            memoryRead();
-        }
+        memoryRead();
     }
 
     public void setMemory(Boolean[] memory) {
