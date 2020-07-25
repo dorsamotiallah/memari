@@ -8,6 +8,7 @@ import simulator.control.Simulator;
 import simulator.gates.combinational.And;
 import simulator.gates.combinational.Memory;
 import simulator.gates.combinational.Not;
+import simulator.gates.combinational.Or;
 import simulator.gates.sequential.Clock;
 import simulator.network.Link;
 import simulator.wrapper.Multiply4;
@@ -152,11 +153,11 @@ public class Sample {
     	Clock clk = new Clock("CLOCK",1000);
     	
     	
-		//Dflipflop for cycle and controler
-    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.falseLogic);
-    	DFlipFlop d2 = new DFlipFlop("d2","2X2",clk.getOutput(0),d1.getOutput(0));
-    	Not n1 = new Not("NOT1",d2.getOutput(0));
-    	Link controler = n1.getOutput(0);
+//		//Dflipflop for cycle and controler
+//    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.falseLogic);
+//    	DFlipFlop d2 = new DFlipFlop("d2","2X2",clk.getOutput(0),d1.getOutput(0));
+//    	Not n1 = new Not("NOT1",d2.getOutput(0));
+//    	Link controler = n1.getOutput(0);
 
     
     	Register pc = new Register("PC","33X32",clk.getOutput(0));//starts with zero
@@ -261,21 +262,24 @@ public class Sample {
 		setJump(cu.getOutput(9));
 
     	//register file     	    	
-    	Register [] Reg= new Register[32];
+		Register [] Reg= new Register[32];
     	Link[] WriteData= new Link[32];
     	
     	Wide5Mux2x1 secondregmux = new Wide5Mux2x1("mux5","11X5",RegDst);
     	secondregmux.addInput(rt);
     	secondregmux.addInput(rd);
     	And[] ands= new And[32];
+    	Or[] ors= new Or[32];
      	Decoder decoder= new Decoder("DEC","5X32",secondregmux.getOutput(0),secondregmux.getOutput(1),secondregmux.getOutput(2),secondregmux.getOutput(3),secondregmux.getOutput(4));
     	for(int i=0;i<32;++i) {
-    		ands[i]= new And("a"+i,decoder.getOutput(i),Simulator.trueLogic);
+    		ands[i]= new And("a"+i,decoder.getOutput(i),RegWrite,clk.getOutput(0));
     	}
+    	
     	for(int i=0; i<32;++i) {
     		Reg[i]= new Register("h"+i, "33X32",ands[i].getOutput(0));
     		
     	}
+  
     	Wide32Mux32x1 MUX1 = new Wide32Mux32x1("MUX1","1029X32",rs[0],rs[1],rs[2],rs[3],rs[4]);
     	
     	Wide32Mux32x1 MUX2 = new Wide32Mux32x1("MUX2","1029X32",rt[0],rt[1],rt[2],rt[3],rt[4]);
