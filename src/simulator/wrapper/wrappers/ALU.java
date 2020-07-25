@@ -87,7 +87,7 @@ public class ALU extends Wrapper {
 		for (int i = 0 ; i < 32 ; i++) {
 			
 			// first multiplexer for (and , or , add )
-			Mux4x1 mux1 = new Mux4x1("MUX1", "6X1") ;
+			Multiplexer mux1 = new Multiplexer("MUX1", "6X1") ;
 			
 			//selectLines adding
 			mux1.addInput(  ALU4input[3] ,ALU4input[2] );
@@ -97,7 +97,7 @@ public class ALU extends Wrapper {
 			
 			
 			//second multiplexer for (sub , slt , nor )
-			Mux4x1 mux2 = new Mux4x1("MUX2", "6X1") ;
+			Multiplexer  mux2 = new Multiplexer ("MUX2", "6X1") ;
 			
 			//selectLines adding
 			mux2.addInput( ALU4input[3] , ALU4input[0]  );
