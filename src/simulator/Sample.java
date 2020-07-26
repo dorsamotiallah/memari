@@ -1,3 +1,4 @@
+
 //Dedicated to Goli
 
 package simulator;
@@ -9,6 +10,7 @@ import simulator.gates.combinational.And;
 import simulator.gates.combinational.Memory;
 import simulator.gates.combinational.Not;
 import simulator.gates.combinational.Or;
+import simulator.gates.sequential.BigClock;
 import simulator.gates.sequential.Clock;
 import simulator.network.Link;
 import simulator.wrapper.Multiply4;
@@ -150,7 +152,7 @@ public class Sample {
 
 	public static void main(String[] args) {
 		
-    	Clock clk = new Clock("CLOCK",1000);
+    	BigClock clk = new BigClock("CLOCK");
     	
     	
 //		//Dflipflop for cycle and controler
@@ -176,8 +178,12 @@ public class Sample {
     	//initalizing instruction memory 
     	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
     	//two lw
-    	Boolean[] instructions= {true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false};
-    	for(int i=0;i<96;i++) {//288
+    	Boolean[] instructions= {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+    							true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,
+    							true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,
+    							false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,
+    							};
+    	for(int i=0;i<128;i++) {//288
     		initinstruction[i]=instructions[i];
     	}
     	
@@ -252,7 +258,7 @@ public class Sample {
 		setALUop1(cu.getOutput(5));
 		setALUop0(cu.getOutput(6));
 		setALUSrc(cu.getOutput(7));
-		setRegWrite(cu.getOutput(8));
+		setRegWrite(clk.getOutput(0));
 		setJump(cu.getOutput(9));
 
     	//register file     	    	
@@ -263,10 +269,16 @@ public class Sample {
     	secondregmux.addInput(rt);
     	secondregmux.addInput(rd);
     	And[] ands= new And[32];
-    	Or[] ors= new Or[32];
+    	And[] ands2= new And[32];
+    	Not[] nots2= new Not[32];
      	Decoder decoder= new Decoder("DEC","5X32",secondregmux.getOutput(0),secondregmux.getOutput(1),secondregmux.getOutput(2),secondregmux.getOutput(3),secondregmux.getOutput(4));
+    /////////////// instead of regwrite i used clk
+     	for(int i=0;i<32;++i) {
+    		ands[i]= new And("a"+i,decoder.getOutput(i),clk.getOutput(0));
+    	}
+    	
     	for(int i=0;i<32;++i) {
-    		ands[i]= new And("a"+i,decoder.getOutput(i),RegWrite,clk.getOutput(0));
+    		ands2[i]= new And("a"+i,ands[i].getOutput(0),clk.getOutput(0));
     	}
     	
     	for(int i=0; i<32;++i) {
@@ -304,7 +316,7 @@ public class Sample {
     	
     	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
     	
-      	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
+      	Wide32Mux2x1 EXmux = new Wide32Mux2x1("EXmux","65X32",ALUSrc);
        	for(int i=0;i<32;i++)
        		EXmux.addInput(MUX2.getOutput(i));  	
        	for(int i=0;i<32;i++)
@@ -313,7 +325,7 @@ public class Sample {
 
     	ALU alu = new ALU("alu","68X33");
     	for(int i=0;i<4;i++)
-    		alu.addInput(alucontrol.getOutput(3-i));
+    		alu.addInput(alucontrol.getOutput(i));
     	for(int i=0;i<32;i++)
     		alu.addInput(MUX1.getOutput(i));
     	for(int i=0;i<32;i++)
@@ -359,17 +371,19 @@ public class Sample {
     	
     	
     	//WB       	
-       	Wide32Mux2x1 WBmux = new Wide32Mux2x1("m","65X32",MemToReg);
+       	Wide32Mux2x1 WBmux = new Wide32Mux2x1("WBm","65X32",MemToReg);
+       	
        	for(int i=0;i<32;i++)
        		WBmux.addInput(alu.getOutput(i));  	
        	for(int i=0;i<32;i++)
        		WBmux.addInput(datamemory.getOutput(i));
-       	
        	for(int i=0 ;i<32;i++)
        		WriteData[i]=WBmux.getOutput(i);
        	for(int i=0;i<32;++i) {
        	for(int j=0; j<32;++j) {
-			Reg[i].addInput(WriteData[j]);
+			//////////here is  the multiplexer for choosing q or d
+       		Mux2x1 Store= new Mux2x1("s", "3X1",ands[i].getOutput(0),Reg[i].getOutput(j),WriteData[j]);
+			Reg[i].addInput(Store.getOutput(0));
 		}
        	}
        	
@@ -378,11 +392,11 @@ public class Sample {
        		pc.addInput(jumpmux.getOutput(i));
        	
        	
-    	
+       	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,Reg[8],Reg[9],Reg[10],datamemory,alu,alucontrol);
-        Simulator.debugger.setDelay(500);
+        Simulator.debugger.addTrackItem(clk,InstructionMem,WBmux,decoder,Reg[8],Reg[9],Reg[10],EXmux,alu,datamemory);
+        Simulator.debugger.setDelay(0);
         Simulator.circuit.startCircuit();
 
     }
