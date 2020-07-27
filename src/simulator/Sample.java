@@ -1,6 +1,7 @@
 
 //Dedicated to Goli
 
+
 package simulator;
 
 import java.util.List;
@@ -153,8 +154,7 @@ public class Sample {
 	public static void main(String[] args) {
 		
     	BigClock clk = new BigClock("CLOCK");
-    	
-    	
+        
 //		//Dflipflop for cycle and controler
 //    	DFlipFlop d1 = new DFlipFlop("d1","2X2",clk.getOutput(0),Simulator.falseLogic);
 //    	DFlipFlop d2 = new DFlipFlop("d2","2X2",clk.getOutput(0),d1.getOutput(0));
@@ -162,19 +162,39 @@ public class Sample {
 //    	Link controler = n1.getOutput(0);
 
     
-    	Register pc = new Register("PC","33X32",clk.getOutput(0));//starts with zero
+    	PC pc = new PC("PC","33X32",clk.getOutput(0));//starts with zero
 
     	
     	//adding 32 to pc 
     	Adder pcadder = new Adder("adder","64X32");
     	for(int i=0;i<32;i++)
     		pcadder.addInput(pc.getOutput(i));
+
+  
     	Link[] thirtytwo = new Link[32];
     	for(int i=0;i<32;i++)
     		thirtytwo[i]=Simulator.falseLogic;
     	thirtytwo[26]=Simulator.trueLogic;
-    	pcadder.addInput(thirtytwo); 
-    	
+    
+        Link[] one = new Link[32];
+        for(int i=0;i<31;i++)
+        	one[i]=Simulator.falseLogic;
+        one[31]=Simulator.trueLogic;
+        
+        
+        And pcIsOne = new And("pcIsOne");
+        for(int i=0;i<32;i++)
+        	pcIsOne.addInput(pc.getOutput(i));
+        
+        
+        Wide32Mux2x1 pcselector = new Wide32Mux2x1("pcselector","65X32",pcIsOne.getOutput(0));
+        pcselector.addInput(thirtytwo);
+        pcselector.addInput(one);
+        
+        for(int i=0;i<32;i++)
+        	pcadder.addInput(pcselector.getOutput(i)); 
+        
+        
     	//initalizing instruction memory 
     	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
     	//two lw
@@ -395,7 +415,7 @@ public class Sample {
        	
     	
 
-        Simulator.debugger.addTrackItem(clk,InstructionMem,WBmux,decoder,Reg[8],Reg[9],Reg[10],EXmux,alu,datamemory);
+        Simulator.debugger.addTrackItem(clk,pc,InstructionMem,WBmux,decoder,Reg[8],Reg[9],Reg[10],EXmux,alu,datamemory,pcIsOne,pcselector);
         Simulator.debugger.setDelay(0);
         Simulator.circuit.startCircuit();
 

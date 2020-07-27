@@ -16,9 +16,9 @@ public class Wide32Mux2x1 extends Wrapper {
 		int j=1;
 		int k=65;
 		int b=1;
-		Mux2To1 [] mux = new Mux2To1[32];
+		Mux2x1 [] mux = new Mux2x1[32];
 		for(int i=0 ;i<32;++i) {
-			mux[i]= new Mux2To1("m"+i, "3X1",getInput(0));
+			mux[i]= new Mux2x1("m"+i, "3X1",getInput(0));
 			while(b<k) {
 				mux[i].addInput(getInput(b));
 				b=b+32;
