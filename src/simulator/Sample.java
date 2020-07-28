@@ -6,6 +6,7 @@ import java.util.List;
 
 import simulator.control.Simulator;
 import simulator.gates.combinational.And;
+import simulator.gates.combinational.ByteMemory;
 import simulator.gates.combinational.Memory;
 import simulator.gates.combinational.Not;
 import simulator.gates.combinational.Or;
@@ -169,7 +170,7 @@ public class Sample {
     	Adder pcadder = new Adder("adder","64X32");
     	for(int i=0;i<32;i++)
     		pcadder.addInput(pc.getOutput(i));
-    	Link[] thirtytwo = new Link[32];
+    	Link[] four = new Link[32];
     	/*if(pcAnd.getOutput(0).getSignal()){
     		for(int i=0; i<32;i++){
     			thirtytwo[i]=Simulator.falseLogic;
@@ -184,24 +185,25 @@ public class Sample {
 		}*/
 
 		for (int i = 0; i < 32; i++ ){
-			thirtytwo[i] = Simulator.falseLogic;
+			four[i] = Simulator.falseLogic;
 		}
-		thirtytwo[26]=Simulator.trueLogic;
+		four[29]=Simulator.trueLogic;
 
-    	pcadder.addInput(thirtytwo);
+    	pcadder.addInput(four);
     	
     	//initalizing instruction memory 
-    	Boolean[] initinstruction = new Boolean[65536];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
+    	Boolean[][] initinstruction = new Boolean[65536][8];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
     	//two lw
-    	Boolean[] instructions= {/*false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,*/
-    							true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
-								false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
-								false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
-								false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
-								true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,
-								false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false};
-    	for(int i=0;i<192;i++) {//288
-    		initinstruction[i]=instructions[i];
+    	Boolean[][] instructions= {{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+    							   {true,false,false,false,true,true,false,true},{false,false,true,false,true,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+								   {false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+								   {false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+								   {false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+								   {true,false,false,false,true,true,false,true},{false,true,false,false,true,false,true,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,true},
+								   {false,false,false,false,false,false,false,true},{false,false,true,false,true,false,true,false},{false,true,false,false,false,false,false,false},{false,false,true,false,true,false,true,false}};
+    	for(int i=0;i<28;i++) {
+    		for(int j=0;j<8;j++)
+    		initinstruction[i][j]=instructions[i][j];
     	}
     	
     	// nop instruction 
@@ -209,7 +211,7 @@ public class Sample {
 
     		
     	//giving the address to instruction memory for reading from it   	
-    	Memory InstructionMem = new Memory("InstructionMem");
+    	ByteMemory InstructionMem = new ByteMemory("InstructionMem");
     	InstructionMem.setMemory(initinstruction);//seting the instructions
     	InstructionMem.addInput(Simulator.falseLogic);//we only read from instruction memory
     	
@@ -255,7 +257,7 @@ public class Sample {
     	
     	//Jump
     	Link[] nextpcJ = new Link[32];
-    	Shift shiftleft2 = new Shift("shl2_28bit","26X28",jumpaddress);
+    	Shift shiftleft2 = new Shift("shl2_28bit","26X28",jumpaddress);//put 2 zero bits at the end of 26 bits 
     	
     	for(int i=0;i<4;i++)
     		nextpcJ[i]=pc.getOutput(i);
@@ -316,13 +318,13 @@ public class Sample {
     	//EX
 
 
-    		//preparing 32 bit ofsset*32
+    		//preparing 32 bit ofsset*4
     	SignExtend16To32 signEx = new SignExtend16To32("extend","16X32");
     	signEx.addInput(ofssetImmediate);
     	Link[] addressofsset = new Link[32];
     	for(int i=0;i<32;i++)
     		addressofsset[i]=signEx.getOutput(i);
-    	Shiftleft5 shiftleft2_2 = new Shiftleft5("multiply32","32X32",addressofsset);
+    	Multiply4 shiftleft2_2 = new Multiply4("multiply32","32X32",addressofsset);
     	
     	
     	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
@@ -363,22 +365,29 @@ public class Sample {
     		jumpmux.addInput(nextpcJ[i]);
     	
     	//initalizing datad memory 
-    	Boolean[] initdata = new Boolean[65536];
-    	Boolean[] tempdata = {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true};
-    	for(int i=0;i<64 ;i++)
-    		initdata[i]=tempdata[i];
-    	for(int i=64;i<65536 ;i++)
-    		initdata[i]=false;
+    	Boolean[][] initdata = new Boolean[65536][8];
+    	Boolean[][] tempdata = {{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,true,true,true},
+    			                {false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,true,true}};
+
     	
+    	for(int i=0;i<8;i++) {
+    		for(int j=0;j<8;j++)
+        		initdata[i][j]=tempdata[i][j];
+    	}
+    	
+    	for(int i=0;i<65536;i++) {
+    		for(int j=0;j<8;j++)
+        		initdata[i][j]=false;
+    	}
     	
     	//access data in memory
-    	Memory datamemory = new Memory("DataMem");
+    	ByteMemory datamemory = new ByteMemory("DataMem");
     	datamemory.setMemory(initdata);
     	datamemory.addInput(MemWrite);//cause in Memory class we just get one control signal and if it is true we write otherwise we read so i just put MemWrite to it
     	for(int i=16;i<32;i++)
     		datamemory.addInput(alu.getOutput(i));
-    	/*for(int i=0;i<32;i++)
-    		datamemory.addInput(MUX2.getOutput(i));*/
+    	for(int i=0;i<32;i++)
+    		datamemory.addInput(MUX2.getOutput(i));
     	
     	
     	//WB       	
@@ -406,7 +415,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,Reg[8],Reg[9],Reg[10],datamemory,alu,alucontrol,cu);
+        Simulator.debugger.addTrackItem(clk,pc,InstructionMem,Reg[8],Reg[9],Reg[10],datamemory,alu);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 
