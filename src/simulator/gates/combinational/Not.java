@@ -21,7 +21,6 @@ public class Not extends Node {
     public void evaluate() {
         for (int i = 0; i < getInputs().size(); ++i) {
             getOutput(i).setSignal(!getInput(i).getSignal());
-            System.out.println(this.getLabel());
         }
     }
 }
