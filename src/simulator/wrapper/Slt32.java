@@ -70,6 +70,8 @@ public class Slt32 extends Wrapper {
 		 
 		 for (int i = 0 ; i < res.size() ; i++)
 			 addOutput(res.get(i));	
+		 
+	     //Simulator.debugger.addTrackItem(sb);
 	}
 
 }

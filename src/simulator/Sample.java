@@ -194,20 +194,25 @@ public class Sample {
     	//initalizing instruction memory 
     	Boolean[][] initinstruction = new Boolean[65536][8];//false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,false,false,true,true,false,true,false,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,true,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,true,false,true,false,true,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false
     	//two lw
-    	Boolean[][] instructions= {{false,false,false,false,false,true,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
-    							   {true,false,false,false,true,true,false,true},{false,false,true,false,true,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,true,false},
-								   {false,false,false,false,false,true,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
-								   {false,false,false,false,false,true,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
-								   {false,false,false,false,false,true,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
-								   {true,false,false,false,true,true,false,true},{false,true,false,false,true,false,true,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,true},
-								   {false,false,false,false,false,false,false,true},{false,false,true,false,true,false,true,false},{false,true,false,false,false,false,false,false},{false,false,true,false,true,false,true,false}};
-    	for(int i=0;i<28;i++) {
+    	Boolean[][] instructions= {{false,false,false,false,false,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+    			    /*j 4*/        {false,false,false,false,true,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,true,false,false},
+    			                   {false,false,false,false,false,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+    			                   {false,false,false,false,false,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+    			                   {false,false,false,false,false,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+          /*beq $t1,$t2,1*/        {false,false,false,true,false,false,false,true},{false,false,true,false,true,false,true,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,true},
+    			                   {false,false,false,false,false,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},
+    	 /* lw $t1,0x0($t1)*/	   {true,false,false,false,true,true,false,true},{false,false,false,false,true,false,false,true},{false,false,false,false,true,false,false,true},{false,false,false,false,false,false,false,false},
+    	 /*lw $t2,0x1($t2)*/	   {true,false,false,false,true,true,false,true},{false,false,false,false,true,false,true,false},{false,false,false,false,true,false,true,false},{false,false,false,false,false,false,false,true},
+    	 /* sw $t1,0x1($t2)*/      {true,false,true,false,true,true,false,true},{false,true,false,false,true,false,false,true},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,true}};						
+    	
+    	
+    	for(int i=0;i<40;i++) {
     		for(int j=0;j<8;j++)
     		initinstruction[i][j]=instructions[i][j];
     	}
     	
     	// nop instruction 
-    	//false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,
+    	//false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,
 
     		
     	//giving the address to instruction memory for reading from it   	
@@ -329,7 +334,7 @@ public class Sample {
     	
     	AluControl alucontrol = new AluControl("alucontrol","6X4",ALUop0,ALUop1,funct[0],funct[1],funct[2],funct[3]);
     	
-      	Wide32Mux2x1 EXmux = new Wide32Mux2x1("m","65X32",ALUSrc);
+      	Wide32Mux2x1 EXmux = new Wide32Mux2x1("Exmux","65X32",ALUSrc);
        	for(int i=0;i<32;i++)
        		EXmux.addInput(MUX2.getOutput(i));  	
        	for(int i=0;i<32;i++)
@@ -366,8 +371,8 @@ public class Sample {
     	
     	//initalizing datad memory 
     	Boolean[][] initdata = new Boolean[65536][8];
-    	Boolean[][] tempdata = {{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,true,true,true},
-    			                {false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,true,true}};
+    	Boolean[][] tempdata = {{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,true},
+    			                {false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false},{false,false,false,false,false,false,false,false}};
 
     	
     	for(int i=0;i<8;i++) {
@@ -391,7 +396,7 @@ public class Sample {
     	
     	
     	//WB       	
-       	Wide32Mux2x1 WBmux = new Wide32Mux2x1("m","65X32",MemToReg);
+       	Wide32Mux2x1 WBmux = new Wide32Mux2x1("WBmux","65X32",MemToReg);
        	for(int i=0;i<32;i++)
        		WBmux.addInput(alu.getOutput(i));  	
        	for(int i=0;i<32;i++)
@@ -415,7 +420,7 @@ public class Sample {
     	
     	
 
-        Simulator.debugger.addTrackItem(clk,pc,InstructionMem,Reg[8],Reg[9],Reg[10],datamemory,EXmux,MUX1,alu,cu);
+        Simulator.debugger.addTrackItem(clk,pc,InstructionMem,Reg[8],Reg[9],Reg[10],datamemory,EXmux,MUX1,alu,WBmux);
         Simulator.debugger.setDelay(500);
         Simulator.circuit.startCircuit();
 

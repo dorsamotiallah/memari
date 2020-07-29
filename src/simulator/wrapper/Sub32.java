@@ -61,6 +61,8 @@ public class Sub32 extends Wrapper {
 		for (int i = 0; i < out.length ; i++)
 			addOutput(out[i]);
 		
+		//Simulator.debugger.addTrackItem(nt1,ad1,ad2);
+		
 	}
 
 }
